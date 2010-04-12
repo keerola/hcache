@@ -51,50 +51,30 @@ def gcc_default_includes
   read_gcc_default_includes  
 end
   
-argv = ARGV.clone
-command = argv.shift + " "
-includes = gcc_default_includes
-original_includes = ""
-while !includes.empty? do
-  include_dir = includes.shift
-  command += "-I#{cache_dir}#{include_dir} "
-end
-while !argv.empty? do
-  arg = argv.shift
-  if arg.match(/^\-I/)
-    include_path = arg[2, arg.length]
-    command += "-I#{cache_dir}#{include_path} "
-    original_includes += "-I#{include_path} "
-  else
-    command += "#{arg} "
+def rewrite_command(cache_dir, extra_args="")
+  argv = ARGV.clone
+  command = "#{argv.shift} "
+  new_includes = gcc_default_includes
+  old_includes = ""
+  while !new_includes.empty? do
+    include_dir = new_includes.shift
+    command += "-I#{cache_dir}#{include_dir} "
   end
-end
-command += original_includes
-
-argv = ARGV.clone
-dep_command = argv.shift + " "
-includes = gcc_default_includes
-original_includes = ""
-while !includes.empty? do
-  include_dir = includes.shift
-  dep_command += "-I#{cache_dir}#{include_dir} "
-end
-while !argv.empty? do
-  arg = argv.shift
-  if arg == "-o"
-    argv.shift
-  elsif arg.match(/^\-I/)
-    include_path = arg[2, arg.length]
-    dep_command += "-I#{cache_dir}#{include_path} "
-    original_includes += "-I#{include_path} "
-  else
-    dep_command += "#{arg} "
+  while !argv.empty? do
+    arg = argv.shift
+    if arg.match(/^\-I/)
+      include_dir = arg[2, arg.length]
+      command += "-I#{cache_dir}#{include_dir} "
+      old_includes += "-I#{include_dir} "
+    else
+      command += "#{arg} "    
+    end
   end
+  command += "#{extra_args} #{old_includes}"
+  command
 end
-dep_command += "-M -MP "
-dep_command += original_includes
 
-dep_output = `#{dep_command} | grep ":$" | sed -e "s/:$//g"`
+dep_output = `#{rewrite_command(cache_dir, "-M -MP")} | grep ":$" | sed -e "s/:$//g"`
 
 puts "Dependencies:"
 dep_output.each_line do |file|
@@ -115,4 +95,5 @@ dep_output.each_line do |file|
   puts " #{file}"
 end
 
-%x[#{command}]
+%x[#{rewrite_command(cache_dir)}]
+
