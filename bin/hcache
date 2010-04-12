@@ -2,7 +2,7 @@
 
 home = ENV["HOME"]
 
-cache_dir = "#{home}/.phcache/"
+cache_dir = "#{home}/.hcache/"
 `mkdir -p #{cache_dir}`
 
 GCC_DEFAULT_INCLUDES_FILE = "#{cache_dir}/gcc_default_includes"
