@@ -1,0 +1,102 @@
+#!/usr/bin/env ruby
+
+def gcc_default_includes
+  result = []
+  output = `echo | cpp -v 2>&1`
+
+  lines = []
+  output.each_line do |line|
+    lines.push line
+  end
+
+  while !lines.empty?
+    line = lines.shift
+    break if line.match(/#include \"...\" search starts here:/)
+  end
+
+  while !lines.empty?
+    line = lines.shift
+    break if line.match(/#include <...> search starts here:/)
+    next if line.match(/framework directory/)
+    result.push line.strip
+  end
+
+  while !lines.empty?
+    line = lines.shift
+    break if line.match(/End of search list./)
+    next if line.match(/framework directory/)
+    result.push line.strip
+  end
+  result
+end
+
+home = ENV["HOME"]
+
+cache_dir = "#{home}/.phcache/"
+`mkdir -p #{cache_dir}`
+
+argv = ARGV.clone
+command = argv.shift + " "
+includes = gcc_default_includes
+original_includes = ""
+while !includes.empty? do
+  include_dir = includes.shift
+  command += "-I#{cache_dir}#{include_dir} "
+end
+while !argv.empty? do
+  arg = argv.shift
+  if arg.match(/^\-I/)
+    include_path = arg[2, arg.length]
+    command += "-I#{cache_dir}#{include_path} "
+    original_includes += "-I#{include_path} "
+  else
+    command += "#{arg} "
+  end
+end
+command += original_includes
+
+argv = ARGV.clone
+dep_command = argv.shift + " "
+includes = gcc_default_includes
+original_includes = ""
+while !includes.empty? do
+  include_dir = includes.shift
+  dep_command += "-I#{cache_dir}#{include_dir} "
+end
+while !argv.empty? do
+  arg = argv.shift
+  if arg == "-o"
+    argv.shift
+  elsif arg.match(/^\-I/)
+    include_path = arg[2, arg.length]
+    dep_command += "-I#{cache_dir}#{include_path} "
+    original_includes += "-I#{include_path} "
+  else
+    dep_command += "#{arg} "
+  end
+end
+dep_command += "-M -MP "
+dep_command += original_includes
+
+dep_output = `#{dep_command} | grep ":$" | sed -e "s/:$//g"`
+
+puts "Dependencies:"
+dep_output.each_line do |file|
+  file.strip!
+  if file.match(/^#{cache_dir}/)
+    print "  [ HIT      ] "
+    puts " #{file.gsub(/^#{cache_dir}/, "")}"
+    next
+  end
+  target = "#{cache_dir}#{file}"
+  if File.exists? target
+    print "  [ UNCACHED ] "
+  else
+    print "  [ MISS     ] "
+    `mkdir -p \`dirname #{target}\``
+    `cp -f #{file} #{target}`
+  end
+  puts " #{file}"
+end
+
+%x[#{command}]
