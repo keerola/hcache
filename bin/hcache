@@ -1,6 +1,17 @@
 #!/usr/bin/env ruby
 
-def gcc_default_includes
+home = ENV["HOME"]
+
+cache_dir = "#{home}/.phcache/"
+`mkdir -p #{cache_dir}`
+
+GCC_DEFAULT_INCLUDES_FILE = "#{cache_dir}/gcc_default_includes"
+
+def read_gcc_default_includes
+  Marshal.load(IO.read(GCC_DEFAULT_INCLUDES_FILE))
+end
+
+def cache_gcc_default_includes
   result = []
   output = `echo | cpp -v 2>&1`
 
@@ -27,14 +38,19 @@ def gcc_default_includes
     next if line.match(/framework directory/)
     result.push line.strip
   end
-  result
+
+  file = File.new(GCC_DEFAULT_INCLUDES_FILE, 'w')
+  file.write(Marshal.dump(result))
+  file.close
 end
 
-home = ENV["HOME"]
-
-cache_dir = "#{home}/.phcache/"
-`mkdir -p #{cache_dir}`
-
+def gcc_default_includes
+  unless File.exist? GCC_DEFAULT_INCLUDES_FILE
+    cache_gcc_default_includes
+  end
+  read_gcc_default_includes  
+end
+  
 argv = ARGV.clone
 command = argv.shift + " "
 includes = gcc_default_includes
