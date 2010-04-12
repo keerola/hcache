@@ -51,7 +51,7 @@ def gcc_default_includes
   read_gcc_default_includes  
 end
   
-def rewrite_command(cache_dir, extra_args="")
+def rewrite_command(cache_dir, remove_o=false, insert_args="")
   argv = ARGV.clone
   command = "#{argv.shift} "
   new_includes = gcc_default_includes
@@ -66,15 +66,17 @@ def rewrite_command(cache_dir, extra_args="")
       include_dir = arg[2, arg.length]
       command += "-I#{cache_dir}#{include_dir} "
       old_includes += "-I#{include_dir} "
+    elsif arg == "-o" and remove_o
+      argv.shift
     else
       command += "#{arg} "    
     end
   end
-  command += "#{extra_args} #{old_includes}"
+  command += "#{insert_args} #{old_includes}"
   command
 end
 
-dep_output = `#{rewrite_command(cache_dir, "-M -MP")} | grep ":$" | sed -e "s/:$//g"`
+dep_output = `#{rewrite_command(cache_dir, true, "-M -MP")} | grep ":$" | sed -e "s/:$//g"`
 
 puts "Dependencies:"
 dep_output.each_line do |file|
