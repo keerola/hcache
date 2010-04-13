@@ -3,13 +3,10 @@ LD = gcc
 
 INCDIRS = -Iinclude
 
-OBJS1 = test1.o
-PROG1 = test1
-
 OBJS2 = test2a.o test2b.o test2c.o
 PROG2 = test2
 
-all: $(PROG1) $(PROG2)
+all: $(PROG2)
 
 clean:
 	rm -f $(OBJS1) $(PROG1) $(OBJS2) $(PROG2)
