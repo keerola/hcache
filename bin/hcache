@@ -6,6 +6,8 @@ if cache_dir.nil?
   cache_dir = "#{home}/.hcache/"
 end
 
+cache_dir += '/' unless cache_dir.match(/\/$/)
+
 `mkdir -p #{cache_dir}`
 
 GCC_DEFAULT_INCLUDES_FILE = "#{cache_dir}/gcc_default_includes"

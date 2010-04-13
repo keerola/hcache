@@ -3,9 +3,12 @@ Feature: Header cache
   As a desperate developer
   I want to utilize a header cache
 
-  Scenario: Simple build
+  Scenario: Cold cache
     Given working directory "examples"
-    When I run "make test1"
+    And empty cache "hcache-dir"
+    When I run "make clean"
+    And I run "make test1"
     Then it succeeds
+    And it says "MISS.*include/test1.h"
     And "test1" exists
     

@@ -1,3 +1,4 @@
 *.o
+examples/hcache-dir
 examples/test1
 
