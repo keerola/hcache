@@ -17,8 +17,18 @@ Hcache is used as a wrapper for GCC, for example:
 
     hcache gcc -Iinclude -o test test.c
 
-By default, `$HOME/.hcache` is used as the cache directory. Another location
-can be specified by defining the environment variable `$HCACHE_DIR`.
+By default, `$HOME/.hcache` is used as the cache directory. The default
+can be overridden with the environment variable `$HCACHE_DIR`.
+
+For more examples, see the `examples` and `features` directories.
+
+
+Requirements
+------------
+
+-  [Ruby](http://www.ruby-lang.org/)
+-  [Cucumber](http://cukes.info/) and [RSpec](http://rspec.info/) for
+   feature tests
 
 
 License
