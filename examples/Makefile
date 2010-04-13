@@ -3,25 +3,24 @@ LD = gcc
 
 INCDIRS = -Iinclude
 
-OBJS2 = test2a.o test2b.o test2c.o
-PROG2 = test2
+OBJS = test-a.o test-b.o test-c.o
+PROG = test
 
-all: $(PROG2)
+all: $(PROG)
 
 clean:
-	rm -f $(OBJS1) $(PROG1) $(OBJS2) $(PROG2)
+	rm -f $(OBJS) $(PROG)
 
-test3: INCDIRS = -isystem include
-test3: $(PROG2)
+test-hot-cache: $(PROG)
 
-$(PROG1): $(OBJS1)
-	$(LD) $(LDFLAGS) -o $(PROG1) $(OBJS1)
+test-learning-cache: INCDIRS = -isystem include
+test-learning-cache: $(PROG)
 
-$(PROG2): $(OBJS2)
-	$(LD) $(LDFLAGS) -o $(PROG2) $(OBJS2)
+$(PROG): $(OBJS)
+	$(LD) $(LDFLAGS) -o $@ $?
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCDIRS) -c -o $@ $<
 
-.PHONY: all clean test3
+.PHONY: all clean test-hot-cache test-learning-cache
 

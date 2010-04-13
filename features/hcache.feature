@@ -4,17 +4,17 @@ Feature: Header cache
   I want to utilize a header cache
 
   Scenario: Hot cache
-    When I run "make test2"
+    When I run "make test-hot-cache"
     Then it succeeds
-    And "include/test2.h" is a miss
-    And "include/test2.h" is a hit
-    And "test2" exists
+    And "include/test.h" is a miss
+    And "include/test.h" is a hit
+    And "test" exists
 
   Scenario: Learning cache
-    When I run "make test3"
+    When I run "make test-learning-cache"
     Then it succeeds
-    And "include/test2.h" is a miss
-    And "include/test2.h" is uncached
-    And "include/test2.h" is a hit
-    And "test2" exists
+    And "include/test.h" is a miss
+    And "include/test.h" is uncached
+    And "include/test.h" is a hit
+    And "test" exists
 

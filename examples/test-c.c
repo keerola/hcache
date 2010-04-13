@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "test2.h"
+#include "test.h"
 
 void
 world(void)
