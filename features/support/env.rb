@@ -8,7 +8,7 @@ class HcacheWorld
     stderr_file.close
     @last_stdout = `#{command} 2> #{stderr_file.path}`
     @last_exit_status = $?.exitstatus
-    @last_stderr = IO.read(stderr_file)
+    @last_stderr = IO.read(stderr_file.path)
   end
   
 end
