@@ -26,3 +26,13 @@ Then /^"([^\"]*)" exists$/ do |file|
   File.exist?(file).should == true
 end
 
+Then /^"([^\"]*)" is a hit$/ do |header|
+  File.exist?("#{HCACHE_DIR}/#{header}").should == true
+  @last_stdout.match(/HIT.*#{header}/).should_not == nil
+end
+
+Then /^"([^\"]*)" is a miss$/ do |header|
+  File.exist?("#{HCACHE_DIR}/#{header}").should == true
+  @last_stdout.match(/MISS.*#{header}/).should_not == nil
+end
+

@@ -7,14 +7,14 @@ Feature: Header cache
     When I run "make clean"
     And I run "make test1"
     Then it succeeds
-    And it says "MISS.*include/test1.h"
+    And "include/test1.h" is a miss
     And "test1" exists
     
   Scenario: Hot cache
     When I run "make clean"
     And I run "make test2"
     Then it succeeds
-    And it says "MISS.*include/test2.h"
-    And it says "HIT.*include/test2.h"
+    And "include/test2.h" is a miss
+    And "include/test2.h" is a hit
     And "test2" exists
     
