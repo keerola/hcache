@@ -1,8 +1,11 @@
 #!/usr/bin/env ruby
 
-home = ENV["HOME"]
+cache_dir = ENV["HCACHE_DIR"]
+if cache_dir.nil?
+  home = ENV["HOME"]
+  cache_dir = "#{home}/.hcache/"
+end
 
-cache_dir = "#{home}/.hcache/"
 `mkdir -p #{cache_dir}`
 
 GCC_DEFAULT_INCLUDES_FILE = "#{cache_dir}/gcc_default_includes"
@@ -76,6 +79,7 @@ def rewrite_command(cache_dir, remove_o=false, insert_args="")
   command
 end
 
+puts rewrite_command(cache_dir, true, "-M -MP")
 dep_output = `#{rewrite_command(cache_dir, true, "-M -MP")} | grep ":$" | sed -e "s/:$//g"`
 
 puts "Dependencies:"
