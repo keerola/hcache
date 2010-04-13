@@ -44,9 +44,7 @@ def cache_gcc_default_includes
     result.push line.strip
   end
 
-  file = File.new(GCC_DEFAULT_INCLUDES_FILE, 'w')
-  file.write(Marshal.dump(result))
-  file.close
+  write_gcc_default_includes(result)
 end
 
 def gcc_default_includes
@@ -55,7 +53,21 @@ def gcc_default_includes
   end
   read_gcc_default_includes  
 end
-  
+
+def add_to_gcc_default_includes(new_include)
+  includes = gcc_default_includes
+  unless includes.include? new_include
+    includes.push(new_include)
+    write_gcc_default_includes(includes)
+  end
+end
+
+def write_gcc_default_includes(includes)
+  file = File.new(GCC_DEFAULT_INCLUDES_FILE, 'w')
+  file.write(Marshal.dump(includes))
+  file.close
+end
+
 def rewrite_command(cache_dir, remove_o=false, insert_args="")
   argv = ARGV.clone
   command = "#{argv.shift} "
@@ -95,6 +107,7 @@ dep_output.each_line do |file|
   target = "#{cache_dir}#{file}"
   if File.exists? target
     print "  [ UNCACHED ] "
+    add_to_gcc_default_includes(File.dirname(file))
   else
     print "  [ MISS     ] "
     `mkdir -p \`dirname #{target}\``

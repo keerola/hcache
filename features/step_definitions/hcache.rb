@@ -38,3 +38,8 @@ Then /^"([^\"]*)" is a miss$/ do |header|
   @last_stdout.match(/MISS.*#{header}/).should_not == nil
 end
 
+Then /^"([^\"]*)" is uncached$/ do |header|
+  File.exist?("#{HCACHE_DIR}/#{header}").should == true
+  @last_stdout.match(/UNCACHED.*#{header}/).should_not == nil
+end
+

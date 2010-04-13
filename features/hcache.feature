@@ -15,4 +15,12 @@ Feature: Header cache
     And "include/test2.h" is a miss
     And "include/test2.h" is a hit
     And "test2" exists
-    
+
+  Scenario: Learning cache
+    When I run "make test3"
+    Then it succeeds
+    And "include/test2.h" is a miss
+    And "include/test2.h" is uncached
+    And "include/test2.h" is a hit
+    And "test2" exists
+

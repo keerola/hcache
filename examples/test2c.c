@@ -3,8 +3,8 @@
 #include "test2.h"
 
 void
-hello(void)
+world(void)
 {
-    printf("%s", HELLO);
+    printf("%s", WORLD);
 }
 
