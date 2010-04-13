@@ -5,7 +5,8 @@ Feature: Header cache
 
   Scenario: Simple build
     Given working directory "examples"
-    When I run "make test1"
+    When I run "make clean"
+    And I run "make test1"
     Then it succeeds
     And "test1" exists
     
