@@ -4,7 +4,6 @@ Feature: Header cache
   I want to utilize a header cache
 
   Scenario: Cold cache
-    Given empty cache "hcache-dir"
     When I run "make clean"
     And I run "make test1"
     Then it succeeds
@@ -12,7 +11,6 @@ Feature: Header cache
     And "test1" exists
     
   Scenario: Hot cache
-    Given empty cache "hcache-dir"
     When I run "make clean"
     And I run "make test2"
     Then it succeeds

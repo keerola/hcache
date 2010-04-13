@@ -1,14 +1,13 @@
+HCACHE_DIR = "hcache-dir"
+
 Before do
   Dir.chdir("examples")
+  ENV["HCACHE_DIR"] = HCACHE_DIR
 end
 
 After do
+  FileUtils.rm_rf(HCACHE_DIR)
   Dir.chdir("..")
-end
-
-Given /^empty cache "([^\"]*)"$/ do |cache|
-  ENV["HCACHE_DIR"] = cache
-  FileUtils.rm_rf(cache)
 end
 
 When /^I run "([^\"]*)"$/ do |command|
