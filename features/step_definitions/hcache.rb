@@ -3,9 +3,11 @@ HCACHE_DIR = "hcache-dir"
 Before do
   Dir.chdir("examples")
   ENV["HCACHE_DIR"] = HCACHE_DIR
+  `make clean`
 end
 
 After do
+  `make clean`
   FileUtils.rm_rf(HCACHE_DIR)
   Dir.chdir("..")
 end
