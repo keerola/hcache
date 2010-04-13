@@ -3,16 +3,22 @@ LD = gcc
 
 INCDIRS = -Iinclude
 
-OBJS = test1.o
-PROG = test1
+OBJS1 = test1.o
+PROG1 = test1
 
-all: $(PROG)
+OBJS2 = test2a.o test2b.o
+PROG2 = test2
+
+all: $(PROG1) $(PROG2)
 
 clean:
-	rm -f $(OBJS) $(PROG)
+	rm -f $(OBJS1) $(PROG1) $(OBJS2) $(PROG2)
 
-$(PROG): $(OBJS)
-	$(LD) $(LDFLAGS) -o $(PROG) $(OBJS)
+$(PROG1): $(OBJS1)
+	$(LD) $(LDFLAGS) -o $(PROG1) $(OBJS1)
+
+$(PROG2): $(OBJS2)
+	$(LD) $(LDFLAGS) -o $(PROG2) $(OBJS2)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCDIRS) -c -o $@ $<

@@ -1,10 +1,14 @@
+Before do
+  Dir.chdir("examples")
+end
+
+After do
+  Dir.chdir("..")
+end
+
 Given /^empty cache "([^\"]*)"$/ do |cache|
   ENV["HCACHE_DIR"] = cache
   FileUtils.rm_rf(cache)
-end
-
-Given /^working directory "([^\"]*)"$/ do |directory|
-  Dir.chdir(directory)
 end
 
 When /^I run "([^\"]*)"$/ do |command|

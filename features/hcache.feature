@@ -4,11 +4,19 @@ Feature: Header cache
   I want to utilize a header cache
 
   Scenario: Cold cache
-    Given working directory "examples"
-    And empty cache "hcache-dir"
+    Given empty cache "hcache-dir"
     When I run "make clean"
     And I run "make test1"
     Then it succeeds
     And it says "MISS.*include/test1.h"
     And "test1" exists
+    
+  Scenario: Hot cache
+    Given empty cache "hcache-dir"
+    When I run "make clean"
+    And I run "make test2"
+    Then it succeeds
+    And it says "MISS.*include/test2.h"
+    And it says "HIT.*include/test2.h"
+    And "test2" exists
     
