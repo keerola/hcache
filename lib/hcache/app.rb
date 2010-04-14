@@ -7,13 +7,14 @@ class App
   end
   
   def get_cache_dir 
-    cache_dir = ENV["HCACHE_DIR"]
-    if cache_dir.nil?
+    result = ENV["HCACHE_DIR"]
+    if result.nil?
       home = ENV["HOME"]
-      cache_dir = "#{home}/.hcache/"
+      result = "#{home}/.hcache/"
     end
     
-    cache_dir += '/' unless cache_dir.match(/\/$/)
+    result += '/' unless result.match(/\/$/)
+    result
   end
 
   def run
