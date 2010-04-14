@@ -1,5 +1,7 @@
 require File.dirname(__FILE__) + '/../lib/hcache/config'
 
+include Hcache
+
 describe Config do
 
   it "allows an empty file" do
