@@ -20,12 +20,20 @@ Then /^it says "([^\"]*)"$/ do |regexp|
   @last_stdout.match(regexp).should_not == nil
 end
 
+Then /^it fails$/ do
+  @last_exit_status.should_not == 0
+end
+
 Then /^it succeeds$/ do
   @last_exit_status.should == 0
 end
 
 Then /^"([^\"]*)" exists$/ do |file|
   File.exist?(file).should == true
+end
+
+Then /^the error text is "([^\"]*)"$/ do |text|
+  @last_stderr.chomp.should == text
 end
 
 def check_header(header, exists, verdict)

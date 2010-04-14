@@ -3,6 +3,16 @@ Feature: Header cache
   As a desperate developer
   I want to utilize a header cache
 
+  Scenario: Usage information #1
+    When I run "../bin/hcache"
+    Then it fails
+    And the error text is "Usage: hcache [--relative] gcc ..."
+
+  Scenario: Usage information #2
+    When I run "../bin/hcache --relative"
+    Then it fails
+    And the error text is "Usage: hcache [--relative] gcc ..."
+
   Scenario: Hot cache
     When I run "make test-hot-cache"
     Then it succeeds

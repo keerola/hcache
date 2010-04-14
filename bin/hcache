@@ -1,6 +1,13 @@
 #!/usr/bin/env ruby
 
+USAGE = "Usage: hcache [--relative] gcc ..."
+
 OPTIONS = { :relative => "--relative" }
+
+if ARGV.length == 0 or (ARGV.length == 1 and ARGV[0] == OPTIONS[:relative])
+  $stderr.puts USAGE
+  exit 2
+end
 
 relative_mode = (ARGV[0] == OPTIONS[:relative])
 
