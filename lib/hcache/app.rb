@@ -1,7 +1,7 @@
 require 'optparse'
 
-require File.dirname(__FILE__) + '/gcc'
-require File.dirname(__FILE__) + '/config'
+require File.join(File.dirname(__FILE__), 'gcc')
+require File.join(File.dirname(__FILE__), 'config')
 
 module Hcache
 

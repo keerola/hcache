@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
-require File.expand_path("../../lib/hcache/app", __FILE__)
+require File.join(File.dirname(__FILE__), '../lib/hcache/app')
 
-app = Hcache::App.new(ARGV)
-app.run
+Hcache::App.new(ARGV).run
 
