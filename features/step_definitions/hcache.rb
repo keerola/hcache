@@ -12,6 +12,11 @@ After do
   Dir.chdir("..")
 end
 
+Given /^configuration contains "([^\"]*)"$/ do |config|
+  `mkdir -p #{HCACHE_DIR}`
+  `echo "#{config}" >> #{HCACHE_DIR}/config` 
+end
+
 When /^I run "([^\"]*)"$/ do |command|
   run command
 end
@@ -47,6 +52,10 @@ end
 
 Then /^"([^\"]*)" is a miss$/ do |header|
   check_header(header, true, "MISS")
+end
+
+Then /^"([^\"]*)" is excluded$/ do |header|
+  check_header(header, false, "EXCLUDED")
 end
 
 Then /^"([^\"]*)" is relative$/ do |header|

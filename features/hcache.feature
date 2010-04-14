@@ -33,4 +33,11 @@ Feature: Header cache
     Then it succeeds
     And "include/test.h" is relative
     And "test" exists
+
+  Scenario: Configuration
+    Given configuration contains "foobar"
+    When I run "make test-configuration"
+    Then it succeeds
+    And "include/test.h" is excluded
+    And "test" exists
     

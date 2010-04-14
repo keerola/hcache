@@ -20,6 +20,14 @@ Hcache is used as a wrapper for GCC, for example:
 By default, `$HOME/.hcache` is used as the cache directory. The default
 can be overridden with the environment variable `$HCACHE_DIR`.
 
+The file `config` in the cache directory can be used to specify the paths
+at which include files will be cached. The format of the file is a single
+regular expression. For example, 
+
+    ^\/foo
+
+means that include files with paths starting with `/foo` are cached.
+
 For more examples, see the `examples` and `features` directories.
 
 

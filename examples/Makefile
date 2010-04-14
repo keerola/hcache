@@ -19,6 +19,8 @@ test-learning-cache: $(PROG)
 test-relative-cache: CC = ../bin/hcache gcc
 test-relative-cache: $(PROG)
 
+test-configuration: $(PROG)
+
 $(PROG): $(OBJS)
 	$(LD) $(LDFLAGS) -o $@ $?
 
@@ -26,4 +28,5 @@ $(PROG): $(OBJS)
 	$(CC) $(CFLAGS) $(INCDIRS) -c -o $@ $<
 
 .PHONY: all clean test-hot-cache test-learning-cache test-relative-cache
+.PHONY: test-configuration
 

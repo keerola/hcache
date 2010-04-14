@@ -1,12 +1,14 @@
 require 'optparse'
 
 require File.dirname(__FILE__) + '/gcc'
+require File.dirname(__FILE__) + '/config'
 
 class App
   def initialize(args)
     @args = args
     @cache_dir = get_cache_dir
     @relative_mode = false
+    @config = Config.read("#{@cache_dir}/config")
   end
   
   def get_cache_dir 
@@ -89,7 +91,9 @@ class App
         next
       end
       target = "#{@cache_dir}#{file}"
-      if not @relative_mode and not file.match(/^\//)
+      if @config.included.match(file).nil?
+        print "  [ EXCLUDED(#{@config.included}) ] "
+      elsif not @relative_mode and not file.match(/^\//)
         print "  [ RELATIVE ] "
       elsif File.exists? target
         print "  [ UNCACHED ] "
