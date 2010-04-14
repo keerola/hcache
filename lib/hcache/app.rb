@@ -1,3 +1,4 @@
+require 'fileutils'
 require 'optparse'
 
 require File.join(File.dirname(__FILE__), 'gcc')
@@ -27,7 +28,7 @@ module Hcache
     def run
       parse_options! @args
     
-      `mkdir -p #{@cache_dir}`
+      FileUtils.mkdir_p @cache_dir
     
       @gcc_default_includes_file = "#{@cache_dir}/gcc_default_includes"
     
@@ -81,7 +82,6 @@ module Hcache
         command
       end
     
-      puts rewrite_command(@cache_dir, true, "-M -MP")
       dep_output = `#{rewrite_command(@cache_dir, true, "-M -MP")} | grep ":$" | sed -e "s/:$//g"`
     
       puts "Dependencies:"
@@ -102,8 +102,8 @@ module Hcache
           add_to_gcc_default_includes(File.dirname(file))
         else
           print "  [ MISS     ] "
-          `mkdir -p \`dirname #{target}\``
-          `cp -f #{file} #{target}`
+          FileUtils.mkdir_p File.dirname(target)
+          FileUtils.cp(file, target)
         end
         puts " #{file}"
       end
@@ -127,14 +127,14 @@ module Hcache
       exit 2
     end
 
-    def is_hcache_option(option)
+    def is_hcache_option?(option)
       option[0, 1] == "-"
     end
   
     def eat_hcache_args!(args)
       result = []
       while not args.empty?
-        break if !is_hcache_option args[0]
+        break if not is_hcache_option? args[0]
         result.push args.shift
       end
       result
