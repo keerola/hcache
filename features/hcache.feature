@@ -13,6 +13,11 @@ Feature: Header cache
     Then it fails
     And the error text is "Usage: hcache [--relative] gcc ..."
 
+  Scenario: Usage information #3
+    When I run "../bin/hcache --foobar"
+    Then it fails
+    And the error text is "Usage: hcache [--relative] gcc ..."
+
   Scenario: Hot cache
     When I run "make test-hot-cache"
     Then it succeeds

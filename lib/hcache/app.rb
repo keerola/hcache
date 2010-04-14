@@ -115,14 +115,14 @@ class App
     opts = OptionParser.new 
     opts.on('--relative') { @relative_mode = true }
     
-    opts.parse! hcache_args
-    
-    def usage
-      $stderr.puts "Usage: hcache [--relative] gcc ..."
-      exit 2
-    end
+    opts.parse! hcache_args rescue usage
     
     usage unless args.length > 0
+  end
+    
+  def usage
+    $stderr.puts "Usage: hcache [--relative] gcc ..."
+    exit 2
   end
 
   def is_hcache_option(option)
