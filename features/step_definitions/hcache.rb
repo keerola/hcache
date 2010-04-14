@@ -37,6 +37,11 @@ Then /^"([^\"]*)" exists$/ do |file|
   File.exist?(file).should == true
 end
 
+Then /^"([^\"]*)" prints "([^\"]*)"$/ do |file, text|
+  run "./#{file}"
+  @last_stdout.chomp.should == text
+end
+
 Then /^the error text is "([^\"]*)"$/ do |text|
   @last_stderr.chomp.should == text
 end
