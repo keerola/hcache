@@ -1,5 +1,7 @@
 require 'optparse'
 
+require File.dirname(__FILE__) + '/gcc'
+
 class App
   def initialize(args)
     @args = args
@@ -28,41 +30,10 @@ class App
     def read_gcc_default_includes
       Marshal.load(IO.read(@gcc_default_includes_file))
     end
-    
-    def cache_gcc_default_includes
-      result = []
-      output = `echo | cpp -v 2>&1`
-    
-      lines = []
-      output.each_line do |line|
-        lines.push line
-      end
-    
-      while !lines.empty?
-        line = lines.shift
-        break if line.match(/#include \"...\" search starts here:/)
-      end
-    
-      while !lines.empty?
-        line = lines.shift
-        break if line.match(/#include <...> search starts here:/)
-        next if line.match(/framework directory/)
-        result.push line.strip
-      end
-    
-      while !lines.empty?
-        line = lines.shift
-        break if line.match(/End of search list./)
-        next if line.match(/framework directory/)
-        result.push line.strip
-      end
-    
-      write_gcc_default_includes(result)
-    end
-    
+
     def gcc_default_includes
       unless File.exist? @gcc_default_includes_file
-        cache_gcc_default_includes
+        write_gcc_default_includes GCC.default_includes
       end
       read_gcc_default_includes  
     end
