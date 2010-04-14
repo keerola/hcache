@@ -1,8 +1,10 @@
 class GCC
   def self.default_includes
+    parse_default_includes `echo | cpp -v 2>&1`
+  end
+
+  def self.parse_default_includes(output)
     result = []
-    output = `echo | cpp -v 2>&1`
-  
     lines = []
     output.each_line do |line|
       lines.push line
