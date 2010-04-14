@@ -5,6 +5,17 @@ require 'optparse'
 class App
   def initialize(args)
     @args = args
+    @cache_dir = get_cache_dir
+  end
+  
+  def get_cache_dir 
+    cache_dir = ENV["HCACHE_DIR"]
+    if cache_dir.nil?
+      home = ENV["HOME"]
+      cache_dir = "#{home}/.hcache/"
+    end
+    
+    cache_dir += '/' unless cache_dir.match(/\/$/)
   end
 
   def run
@@ -37,17 +48,9 @@ class App
     
     usage unless @args.length > 0
     
-    cache_dir = ENV["HCACHE_DIR"]
-    if cache_dir.nil?
-      home = ENV["HOME"]
-      cache_dir = "#{home}/.hcache/"
-    end
+    `mkdir -p #{@cache_dir}`
     
-    cache_dir += '/' unless cache_dir.match(/\/$/)
-    
-    `mkdir -p #{cache_dir}`
-    
-    @gcc_default_includes_file = "#{cache_dir}/gcc_default_includes"
+    @gcc_default_includes_file = "#{@cache_dir}/gcc_default_includes"
     
     def read_gcc_default_includes
       Marshal.load(IO.read(@gcc_default_includes_file))
@@ -130,18 +133,18 @@ class App
       command
     end
     
-    puts rewrite_command(cache_dir, true, "-M -MP")
-    dep_output = `#{rewrite_command(cache_dir, true, "-M -MP")} | grep ":$" | sed -e "s/:$//g"`
+    puts rewrite_command(@cache_dir, true, "-M -MP")
+    dep_output = `#{rewrite_command(@cache_dir, true, "-M -MP")} | grep ":$" | sed -e "s/:$//g"`
     
     puts "Dependencies:"
     dep_output.each_line do |file|
       file.strip!
-      if file.match(/^#{cache_dir}/)
+      if file.match(/^#{@cache_dir}/)
         print "  [ HIT      ] "
-        puts " #{file.gsub(/^#{cache_dir}/, "")}"
+        puts " #{file.gsub(/^#{@cache_dir}/, "")}"
         next
       end
-      target = "#{cache_dir}#{file}"
+      target = "#{@cache_dir}#{file}"
       if not relative_mode and not file.match(/^\//)
         print "  [ RELATIVE ] "
       elsif File.exists? target
@@ -155,7 +158,7 @@ class App
       puts " #{file}"
     end
     
-    %x[#{rewrite_command(cache_dir)}]
+    %x[#{rewrite_command(@cache_dir)}]
   end
 end
 
