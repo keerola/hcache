@@ -92,7 +92,7 @@ class App
       end
       target = "#{@cache_dir}#{file}"
       if @config.included.match(file).nil?
-        print "  [ EXCLUDED(#{@config.included}) ] "
+        print "  [ EXCLUDED ] "
       elsif not @relative_mode and not file.match(/^\//)
         print "  [ RELATIVE ] "
       elsif File.exists? target
