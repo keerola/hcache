@@ -24,12 +24,12 @@ opts.on('--relative') { relative_mode = true }
 
 opts.parse! hcache_args
 
-USAGE = "Usage: hcache [--relative] gcc ..."
-
-if ARGV.length == 0
-  $stderr.puts USAGE
+def usage
+  $stderr.puts "Usage: hcache [--relative] gcc ..."
   exit 2
 end
+
+usage unless ARGV.length > 0
 
 cache_dir = ENV["HCACHE_DIR"]
 if cache_dir.nil?
