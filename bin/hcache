@@ -1,15 +1,35 @@
 #!/usr/bin/env ruby
 
+require 'optparse'
+
+def is_hcache_option(option)
+  option[0, 1] == "-"
+end
+
+def eat_hcache_args
+  result = []
+  while not ARGV.empty?
+    break if !is_hcache_option ARGV[0]
+    result.push ARGV.shift
+  end
+  result
+end
+
+hcache_args = eat_hcache_args
+
+relative_mode = false
+
+opts = OptionParser.new 
+opts.on('--relative') { relative_mode = true }
+
+opts.parse! hcache_args
+
 USAGE = "Usage: hcache [--relative] gcc ..."
 
-OPTIONS = { :relative => "--relative" }
-
-if ARGV.length == 0 or (ARGV.length == 1 and ARGV[0] == OPTIONS[:relative])
+if ARGV.length == 0
   $stderr.puts USAGE
   exit 2
 end
-
-relative_mode = (ARGV[0] == OPTIONS[:relative])
 
 cache_dir = ENV["HCACHE_DIR"]
 if cache_dir.nil?
@@ -81,9 +101,6 @@ end
 
 def rewrite_command(cache_dir, remove_o=false, insert_args="")
   argv = ARGV.clone
-  while OPTIONS.has_value? argv[0]
-      argv.shift
-  end    
   command = "#{argv.shift} "
   new_includes = gcc_default_includes
   old_includes = ""
@@ -133,4 +150,3 @@ dep_output.each_line do |file|
 end
 
 %x[#{rewrite_command(cache_dir)}]
-
