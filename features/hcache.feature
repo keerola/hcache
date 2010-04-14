@@ -18,3 +18,9 @@ Feature: Header cache
     And "include/test.h" is a hit
     And "test" exists
 
+  Scenario: Relative cache
+    When I run "make test-relative-cache"
+    Then it succeeds
+    And "include/test.h" is relative
+    And "test" exists
+    

@@ -1,5 +1,9 @@
 #!/usr/bin/env ruby
 
+OPTIONS = { :relative => "--relative" }
+
+relative_mode = (ARGV[0] == OPTIONS[:relative])
+
 cache_dir = ENV["HCACHE_DIR"]
 if cache_dir.nil?
   home = ENV["HOME"]
@@ -70,6 +74,9 @@ end
 
 def rewrite_command(cache_dir, remove_o=false, insert_args="")
   argv = ARGV.clone
+  while OPTIONS.has_value? argv[0]
+      argv.shift
+  end    
   command = "#{argv.shift} "
   new_includes = gcc_default_includes
   old_includes = ""
@@ -105,7 +112,9 @@ dep_output.each_line do |file|
     next
   end
   target = "#{cache_dir}#{file}"
-  if File.exists? target
+  if not relative_mode and not file.match(/^\//)
+    print "  [ RELATIVE ] "
+  elsif File.exists? target
     print "  [ UNCACHED ] "
     add_to_gcc_default_includes(File.dirname(file))
   else

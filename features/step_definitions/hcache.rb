@@ -28,20 +28,24 @@ Then /^"([^\"]*)" exists$/ do |file|
   File.exist?(file).should == true
 end
 
-def header_is_verdict(header, verdict)
-  File.exist?("#{HCACHE_DIR}/#{header}").should == true
+def check_header(header, exists, verdict)
+  File.exist?("#{HCACHE_DIR}/#{header}").should == exists
   @last_stdout.match(/#{verdict}.*#{header}/).should_not == nil
 end
 
 Then /^"([^\"]*)" is a hit$/ do |header|
-  header_is_verdict(header, "HIT")
+  check_header(header, true, "HIT")
 end
 
 Then /^"([^\"]*)" is a miss$/ do |header|
-  header_is_verdict(header, "MISS")
+  check_header(header, true, "MISS")
+end
+
+Then /^"([^\"]*)" is relative$/ do |header|
+  check_header(header, false, "RELATIVE")
 end
 
 Then /^"([^\"]*)" is uncached$/ do |header|
-  header_is_verdict(header, "UNCACHED")
+  check_header(header, true, "UNCACHED")
 end
 
