@@ -4,6 +4,7 @@ class App
   def initialize(args)
     @args = args
     @cache_dir = get_cache_dir
+    @relative_mode = false
   end
   
   def get_cache_dir 
@@ -18,34 +19,7 @@ class App
   end
 
   def run
-    def is_hcache_option(option)
-      option[0, 1] == "-"
-    end
-    
-    def eat_hcache_args
-      result = []
-      while not @args.empty?
-        break if !is_hcache_option @args[0]
-        result.push @args.shift
-      end
-      result
-    end
-    
-    hcache_args = eat_hcache_args
-    
-    relative_mode = false
-    
-    opts = OptionParser.new 
-    opts.on('--relative') { relative_mode = true }
-    
-    opts.parse! hcache_args
-    
-    def usage
-      $stderr.puts "Usage: hcache [--relative] gcc ..."
-      exit 2
-    end
-    
-    usage unless @args.length > 0
+    parse_options! @args
     
     `mkdir -p #{@cache_dir}`
     
@@ -144,7 +118,7 @@ class App
         next
       end
       target = "#{@cache_dir}#{file}"
-      if not relative_mode and not file.match(/^\//)
+      if not @relative_mode and not file.match(/^\//)
         print "  [ RELATIVE ] "
       elsif File.exists? target
         print "  [ UNCACHED ] "
@@ -159,6 +133,33 @@ class App
     
     %x[#{rewrite_command(@cache_dir)}]
   end
+
+  def parse_options!(args)
+    hcache_args = eat_hcache_args! args
+    
+    opts = OptionParser.new 
+    opts.on('--relative') { @relative_mode = true }
+    
+    opts.parse! hcache_args
+    
+    def usage
+      $stderr.puts "Usage: hcache [--relative] gcc ..."
+      exit 2
+    end
+    
+    usage unless args.length > 0
+  end
+
+  def is_hcache_option(option)
+    option[0, 1] == "-"
+  end
+  
+  def eat_hcache_args!(args)
+    result = []
+    while not args.empty?
+      break if !is_hcache_option args[0]
+      result.push args.shift
+    end
+    result
+  end
 end
-
-
