@@ -1,3 +1,4 @@
+*.a
 *.o
 hcache-dir
 test
