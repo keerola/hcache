@@ -50,10 +50,6 @@ module Hcache
       command
     end
 
-    def to_s
-      @command
-    end
-
   end
 
 end
