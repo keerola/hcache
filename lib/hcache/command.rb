@@ -1,6 +1,29 @@
 module Hcache
 
-  class Command
+  class CommandBase
+
+    def initialize(args, cache_dir, default_includes)
+      @args = args.clone
+      @cache_dir = cache_dir
+      @default_includes = default_includes
+      @command = get_command 
+    end
+
+    def get_command
+      command = "#{@args.shift}"
+      for default_include in @default_includes
+        command += " -I#{@cache_dir}#{default_include}"
+      end
+      command
+    end
+
+    def to_s
+      @command
+    end
+
+  end
+
+  class Command < CommandBase
 
     def initialize(args, cache_dir, gcc_default_includes, remove_o=false,
                    insert_args="")
