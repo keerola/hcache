@@ -103,7 +103,7 @@ module Hcache
         else
           print "  [ MISS     ] "
           FileUtils.mkdir_p File.dirname(target)
-          FileUtils.cp(file, target)
+          `cp -f #{file} #{target}`
         end
         puts " #{file}"
       end
