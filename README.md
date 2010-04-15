@@ -35,8 +35,7 @@ Requirements
 ------------
 
 -  [Ruby](http://www.ruby-lang.org/)
--  [Cucumber](http://cukes.info/) and [RSpec](http://rspec.info/) for
-   feature tests
+-  [Cucumber](http://cukes.info/) and [RSpec](http://rspec.info/) for tests
 
 
 License
