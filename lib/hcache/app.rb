@@ -60,7 +60,7 @@ module Hcache
         puts " #{file}"
       end
     
-      %x[#{Command.new(@args, @cache_dir, gcc_default_includes)}]
+      %x[#{CompileCommand.new(@args, @cache_dir, gcc_default_includes)}]
     end
 
     def parse_options!(args)

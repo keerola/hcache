@@ -1,6 +1,6 @@
 module Hcache
 
-  class CommandBase
+  class Command
 
     def initialize(args, cache_dir, default_includes)
       @args = args.clone
@@ -23,7 +23,7 @@ module Hcache
 
   end
 
-  class CompileCommand < CommandBase
+  class CompileCommand < Command
 
     def initialize(args, cache_dir, default_includes)
       super
@@ -47,7 +47,7 @@ module Hcache
 
   end
   
-  class DependencyCommand < CommandBase
+  class DependencyCommand < Command
     
     def initialize(args, cache_dir, default_includes)
       super
@@ -72,35 +72,6 @@ module Hcache
       command += old_includes
     end
   
-  end
-
-  class Command < CommandBase
-
-    def initialize(args, cache_dir, default_includes, remove_o=false,
-                   insert_args="")
-      super(args, cache_dir, default_includes)
-      @command += rewrite(remove_o, insert_args)
-    end
-
-    def rewrite(remove_o, insert_args)
-      command = ""
-      old_includes = ""
-      while not @args.empty? do
-        arg = @args.shift
-        if arg.match(/^\-I/)
-          include_dir = arg[2, arg.length]
-          command += " -I#{@cache_dir}#{include_dir}"
-          old_includes += " -I#{include_dir}"
-        elsif arg == "-o" and remove_o
-          @args.shift
-        else
-          command += " #{arg}"    
-        end
-      end
-      command += " #{insert_args} #{old_includes}"
-      command
-    end
-
   end
 
 end
