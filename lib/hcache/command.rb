@@ -2,6 +2,8 @@ module Hcache
 
   class Command
 
+    attr_reader :command
+
     def initialize(args, cache_dir, default_includes)
       @args = args.clone
       @cache_dir = cache_dir
@@ -10,16 +12,14 @@ module Hcache
     end
 
     def get_command
-      command = "#{@args.shift}"
+      command = @args.shift
       for default_include in @default_includes
         command += " -I#{@cache_dir}#{default_include}"
       end
       command
     end
 
-    def to_s
-      @command
-    end
+    alias :to_s :command
 
   end
 
