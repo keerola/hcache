@@ -32,35 +32,10 @@ module Hcache
     
       @gcc_default_includes_file = "#{@cache_dir}/gcc_default_includes"
     
-      def read_gcc_default_includes
-        Marshal.load(IO.read(@gcc_default_includes_file))
-      end
-
-      def gcc_default_includes
-        unless File.exist? @gcc_default_includes_file
-          write_gcc_default_includes GCC.default_includes
-        end
-        read_gcc_default_includes  
-      end
-    
-      def add_to_gcc_default_includes(new_include)
-        includes = gcc_default_includes
-        unless includes.include? new_include
-          includes.push(new_include)
-          write_gcc_default_includes(includes)
-        end
-      end
-    
-      def write_gcc_default_includes(includes)
-        file = File.new(@gcc_default_includes_file, 'w')
-        file.write(Marshal.dump(includes))
-        file.close
-      end
-    
       def rewrite_command(cache_dir, remove_o=false, insert_args="")
         argv = @args.clone
         command = "#{argv.shift} "
-        new_includes = gcc_default_includes
+        new_includes = GCC.default_includes(@gcc_default_includes_file)
         old_includes = ""
         while !new_includes.empty? do
           include_dir = new_includes.shift
@@ -99,7 +74,7 @@ module Hcache
           print "  [ RELATIVE ] "
         elsif File.exists? target
           print "  [ UNCACHED ] "
-          add_to_gcc_default_includes(File.dirname(file))
+          GCC.add_default_include(File.dirname(file), @gcc_default_includes_file)
         else
           print "  [ MISS     ] "
           FileUtils.mkdir_p File.dirname(target)
