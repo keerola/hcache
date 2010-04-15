@@ -31,9 +31,9 @@ module Hcache
       FileUtils.mkdir_p @cache_dir
 
       gcc_default_includes = GCC.default_includes(@gcc_default_includes)
-      command = Command.new
 
-      dep_command = command.rewrite(@args, @cache_dir, gcc_default_includes, true, "-M -MP")
+      dep_command = Command.new(@args, @cache_dir, gcc_default_includes, true,
+                                "-M -MP")
       dep_output = `#{dep_command} | grep ":$" | sed -e "s/:$//g"`
     
       puts "Dependencies:"
@@ -60,7 +60,7 @@ module Hcache
         puts " #{file}"
       end
     
-      %x[#{command.rewrite(@args, @cache_dir, gcc_default_includes)}]
+      %x[#{Command.new(@args, @cache_dir, gcc_default_includes)}]
     end
 
     def parse_options!(args)

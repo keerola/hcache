@@ -2,8 +2,13 @@ module Hcache
 
   class Command
 
-    def rewrite(args, cache_dir, gcc_default_includes, remove_o=false,
-                insert_args="")
+    def initialize(args, cache_dir, gcc_default_includes, remove_o=false,
+                   insert_args="")
+      @command = rewrite(args, cache_dir, gcc_default_includes, remove_o,
+                         insert_args)
+    end
+
+    def rewrite(args, cache_dir, gcc_default_includes, remove_o, insert_args)
       argv = args.clone
       command = "#{argv.shift} "
       new_includes = gcc_default_includes
@@ -26,6 +31,10 @@ module Hcache
       end
       command += "#{insert_args} #{old_includes}"
       command
+    end
+
+    def to_s
+      @command
     end
 
   end
