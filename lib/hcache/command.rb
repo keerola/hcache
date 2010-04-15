@@ -25,34 +25,28 @@ module Hcache
 
   class Command < CommandBase
 
-    def initialize(args, cache_dir, gcc_default_includes, remove_o=false,
+    def initialize(args, cache_dir, default_includes, remove_o=false,
                    insert_args="")
-      @command = rewrite(args, cache_dir, gcc_default_includes, remove_o,
-                         insert_args)
+      super(args, cache_dir, default_includes)
+      @command += rewrite(remove_o, insert_args)
     end
 
-    def rewrite(args, cache_dir, gcc_default_includes, remove_o, insert_args)
-      argv = args.clone
-      command = "#{argv.shift} "
-      new_includes = gcc_default_includes
+    def rewrite(remove_o, insert_args)
+      command = ""
       old_includes = ""
-      while !new_includes.empty? do
-        include_dir = new_includes.shift
-        command += "-I#{cache_dir}#{include_dir} "
-      end
-      while !argv.empty? do
-        arg = argv.shift
+      while not @args.empty? do
+        arg = @args.shift
         if arg.match(/^\-I/)
           include_dir = arg[2, arg.length]
-          command += "-I#{cache_dir}#{include_dir} "
-          old_includes += "-I#{include_dir} "
+          command += " -I#{@cache_dir}#{include_dir}"
+          old_includes += " -I#{include_dir}"
         elsif arg == "-o" and remove_o
-          argv.shift
+          @args.shift
         else
-          command += "#{arg} "    
+          command += " #{arg}"    
         end
       end
-      command += "#{insert_args} #{old_includes}"
+      command += " #{insert_args} #{old_includes}"
       command
     end
 
