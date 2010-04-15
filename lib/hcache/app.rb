@@ -32,8 +32,8 @@ module Hcache
 
       gcc_default_includes = GCC.default_includes(@gcc_default_includes)
 
-      dep_command = Command.new(@args, @cache_dir, gcc_default_includes, true,
-                                "-M -MP")
+      dep_command = DependencyCommand.new(@args, @cache_dir,
+                                          gcc_default_includes)
       dep_output = `#{dep_command} | grep ":$" | sed -e "s/:$//g"`
     
       puts "Dependencies:"
