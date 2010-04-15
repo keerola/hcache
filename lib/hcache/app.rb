@@ -9,19 +9,20 @@ module Hcache
   class App
     def initialize(args)
       @args = args
-      @cache_dir = get_cache_dir
+      @cache_dir = App.get_cache_dir
       @relative_mode = false
       @config = Config.read(File.join(@cache_dir, 'config'))
       @gcc_default_includes = File.join(@cache_dir, 'gcc_default_includes')
     end
   
-    def get_cache_dir 
+    def self.get_cache_dir 
       result = ENV["HCACHE_DIR"]
-      if result.nil?
-        result = File.join(ENV["HOME"], '.hcache/')
-      end
-      result += '/' unless result.match(/\/$/)
-      result
+      return result + '/' unless result.nil?
+
+      result = ENV["HOME"]
+      return File.join(result, '.hcache/') unless result.nil?
+      
+      nil
     end
 
     def run
