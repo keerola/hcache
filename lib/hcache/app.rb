@@ -1,8 +1,9 @@
 require 'fileutils'
 require 'optparse'
 
-require File.join(File.dirname(__FILE__), 'gcc')
+require File.join(File.dirname(__FILE__), 'command')
 require File.join(File.dirname(__FILE__), 'config')
+require File.join(File.dirname(__FILE__), 'gcc')
 
 module Hcache
 
@@ -25,36 +26,14 @@ module Hcache
       nil
     end
 
-    def rewrite_command(remove_o=false, insert_args="")
-      argv = @args.clone
-      command = "#{argv.shift} "
-      new_includes = GCC.default_includes(@gcc_default_includes)
-      old_includes = ""
-      while !new_includes.empty? do
-        include_dir = new_includes.shift
-        command += "-I#{@cache_dir}#{include_dir} "
-      end
-      while !argv.empty? do
-        arg = argv.shift
-        if arg.match(/^\-I/)
-          include_dir = arg[2, arg.length]
-          command += "-I#{@cache_dir}#{include_dir} "
-          old_includes += "-I#{include_dir} "
-        elsif arg == "-o" and remove_o
-          argv.shift
-        else
-          command += "#{arg} "    
-        end
-      end
-      command += "#{insert_args} #{old_includes}"
-      command
-    end
-    
     def run
       parse_options! @args
       FileUtils.mkdir_p @cache_dir
 
-      dep_command = rewrite_command(true, "-M -MP")
+      gcc_default_includes = GCC.default_includes(@gcc_default_includes)
+      command = Command.new
+
+      dep_command = command.rewrite(@args, @cache_dir, gcc_default_includes, true, "-M -MP")
       dep_output = `#{dep_command} | grep ":$" | sed -e "s/:$//g"`
     
       puts "Dependencies:"
@@ -81,7 +60,7 @@ module Hcache
         puts " #{file}"
       end
     
-      %x[#{rewrite_command}]
+      %x[#{command.rewrite(@args, @cache_dir, gcc_default_includes)}]
     end
 
     def parse_options!(args)
