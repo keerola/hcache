@@ -23,7 +23,6 @@ Feature: Header cache
     Then it succeeds
     And "include/test.h" is a miss
     And "include/test.h" is a hit
-    And "test" exists
     And "./test" prints "Hello World"
 
   Scenario: Learning cache
@@ -32,14 +31,12 @@ Feature: Header cache
     And "include/test.h" is a miss
     And "include/test.h" is uncached
     And "include/test.h" is a hit
-    And "test" exists
     And "./test" prints "Hello World"
 
   Scenario: Relative cache
     When I run "make test-relative-cache"
     Then it succeeds
     And "include/test.h" is relative
-    And "test" exists
     And "./test" prints "Hello World"
 
   Scenario: Configuration
@@ -47,6 +44,5 @@ Feature: Header cache
     When I run "make test-configuration"
     Then it succeeds
     And "include/test.h" is excluded
-    And "test" exists
     And "./test" prints "Hello World"
 
