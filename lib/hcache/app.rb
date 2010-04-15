@@ -18,7 +18,10 @@ module Hcache
   
     def self.get_cache_dir 
       result = ENV["HCACHE_DIR"]
-      return result + '/' unless result.nil?
+      unless result.nil?
+        result += '/' unless result =~ /\/$/
+        return result
+      end
 
       result = ENV["HOME"]
       return File.join(result, '.hcache/') unless result.nil?

@@ -14,12 +14,17 @@ describe App, "#get_cache_dir" do
     App.get_cache_dir.should == 'foo/'
   end
 
-  it "returns $HOME/.hcache if $HCACHE_DIR is not defined" do
+  it "does not append a slash to $HCACHE_DIR if it has one" do
+    ENV["HCACHE_DIR"] = 'foo/'
+    App.get_cache_dir.should == 'foo/'
+  end
+
+  it "returns $HOME/.hcache/ if $HCACHE_DIR is not defined" do
     ENV["HOME"] = 'foo'
     App.get_cache_dir.should == 'foo/.hcache/'
   end
 
-  it "returns nil if $HOME is not defined" do
+  it "returns nil if neither $HCACHE_DIR nor $HOME are defined" do
     App.get_cache_dir.should == nil
   end
 
