@@ -9,51 +9,53 @@ module Hcache
   class App
     def initialize(args)
       @args = args
-      @cache_dir = get_cache_dir
+      @cache_dir = App.get_cache_dir
       @relative_mode = false
       @config = Config.read(File.join(@cache_dir, 'config'))
       @gcc_default_includes = File.join(@cache_dir, 'gcc_default_includes')
     end
   
-    def get_cache_dir 
+    def self.get_cache_dir 
       result = ENV["HCACHE_DIR"]
-      if result.nil?
-        result = File.join(ENV["HOME"], '.hcache/')
-      end
-      result += '/' unless result.match(/\/$/)
-      result
+      return result + '/' unless result.nil?
+
+      result = ENV["HOME"]
+      return File.join(result, '.hcache/') unless result.nil?
+      
+      nil
     end
 
+    def rewrite_command(remove_o=false, insert_args="")
+      argv = @args.clone
+      command = "#{argv.shift} "
+      new_includes = GCC.default_includes(@gcc_default_includes)
+      old_includes = ""
+      while !new_includes.empty? do
+        include_dir = new_includes.shift
+        command += "-I#{@cache_dir}#{include_dir} "
+      end
+      while !argv.empty? do
+        arg = argv.shift
+        if arg.match(/^\-I/)
+          include_dir = arg[2, arg.length]
+          command += "-I#{@cache_dir}#{include_dir} "
+          old_includes += "-I#{include_dir} "
+        elsif arg == "-o" and remove_o
+          argv.shift
+        else
+          command += "#{arg} "    
+        end
+      end
+      command += "#{insert_args} #{old_includes}"
+      command
+    end
+    
     def run
       parse_options! @args
       FileUtils.mkdir_p @cache_dir
-    
-      def rewrite_command(cache_dir, remove_o=false, insert_args="")
-        argv = @args.clone
-        command = "#{argv.shift} "
-        new_includes = GCC.default_includes(@gcc_default_includes)
-        old_includes = ""
-        while !new_includes.empty? do
-          include_dir = new_includes.shift
-          command += "-I#{cache_dir}#{include_dir} "
-        end
-        while !argv.empty? do
-          arg = argv.shift
-          if arg.match(/^\-I/)
-            include_dir = arg[2, arg.length]
-            command += "-I#{cache_dir}#{include_dir} "
-            old_includes += "-I#{include_dir} "
-          elsif arg == "-o" and remove_o
-            argv.shift
-          else
-            command += "#{arg} "    
-          end
-        end
-        command += "#{insert_args} #{old_includes}"
-        command
-      end
-    
-      dep_output = `#{rewrite_command(@cache_dir, true, "-M -MP")} | grep ":$" | sed -e "s/:$//g"`
+
+      dep_command = rewrite_command(true, "-M -MP")
+      dep_output = `#{dep_command} | grep ":$" | sed -e "s/:$//g"`
     
       puts "Dependencies:"
       dep_output.each_line do |file|
@@ -79,7 +81,7 @@ module Hcache
         puts " #{file}"
       end
     
-      %x[#{rewrite_command(@cache_dir)}]
+      %x[#{rewrite_command}]
     end
 
     def parse_options!(args)
@@ -98,14 +100,14 @@ module Hcache
       exit 2
     end
 
-    def is_hcache_option?(option)
-      option[0, 1] == "-"
+    def is_option?(arg)
+      arg[0, 1] == "-"
     end
   
     def eat_hcache_args!(args)
       result = []
       while not args.empty?
-        break if not is_hcache_option? args[0]
+        break if not is_option? args[0]
         result.push args.shift
       end
       result
