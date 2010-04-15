@@ -6,7 +6,7 @@ module Hcache
       @args = args.clone
       @cache_dir = cache_dir
       @default_includes = default_includes
-      @command = get_command 
+      @command = get_command
     end
 
     def get_command
@@ -21,6 +21,33 @@ module Hcache
       @command
     end
 
+  end
+
+  class DependencyCommand < CommandBase
+  
+    def initialize(args, cache_dir, default_includes)
+      super
+    end
+  
+    def get_command
+      command = super
+      old_includes = ""
+      while not @args.empty? do
+        arg = @args.shift
+        if arg.match(/^\-I/)
+          include_dir = arg[2, arg.length]
+          command += " -I#{@cache_dir}#{include_dir}"
+          old_includes += " -I#{include_dir}"
+        elsif arg == "-o"
+          @args.shift
+        else
+          command += " #{arg}"    
+        end
+      end
+      command += " -M -MP"
+      command += old_includes
+    end
+  
   end
 
   class Command < CommandBase
