@@ -15,15 +15,28 @@ describe CommandBase do
 
 end
 
+describe CompileCommand do
+
+  ARGS = ['foo', '-Ibar', '-c', '-o', 'baz.o', 'baz.c']
+  HCACHE_DIR = 'qux/'
+  GCC_DEFAULT_INCLUDES = []
+
+  it "prefers cached include directories" do
+    command = CompileCommand.new(ARGS, HCACHE_DIR, GCC_DEFAULT_INCLUDES)
+    command.to_s.should == "foo -Iqux/bar -c -o baz.o baz.c -Ibar"
+  end
+
+end
+
 describe DependencyCommand do
 
-  ARGS = ['foo', '-Ibar', '-o', 'baz.o', 'baz.c']
+  ARGS = ['foo', '-Ibar', '-c', '-o', 'baz.o', 'baz.c']
   HCACHE_DIR = 'qux/'
   GCC_DEFAULT_INCLUDES = []
   
   it "removes -o option and adds -M and -MP options" do
     command = DependencyCommand.new(ARGS, HCACHE_DIR, GCC_DEFAULT_INCLUDES)
-    command.to_s.should == "foo -Iqux/bar baz.c -M -MP -Ibar"
+    command.to_s.should == "foo -Iqux/bar -c baz.c -M -MP -Ibar"
   end
 
 end

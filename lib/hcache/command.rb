@@ -23,8 +23,32 @@ module Hcache
 
   end
 
-  class DependencyCommand < CommandBase
+  class CompileCommand < CommandBase
+
+    def initialize(args, cache_dir, default_includes)
+      super
+    end
+
+    def get_command
+      command = super
+      old_includes = ""
+      while not @args.empty? do
+        arg = @args.shift
+        if arg.match(/^\-I/)
+          include_dir = arg[2, arg.length]
+          command += " -I#{@cache_dir}#{include_dir}"
+          old_includes += " -I#{include_dir}"
+        else
+          command += " #{arg}"    
+        end
+      end
+      command += old_includes
+    end
+
+  end
   
+  class DependencyCommand < CommandBase
+    
     def initialize(args, cache_dir, default_includes)
       super
     end
