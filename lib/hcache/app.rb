@@ -83,7 +83,7 @@ module Hcache
     end
 
     def is_option?(arg)
-      arg[0, 1] == "-"
+      arg[0] == "-"
     end
   
     def eat_hcache_args!(args)
