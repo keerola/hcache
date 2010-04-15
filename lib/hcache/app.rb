@@ -11,31 +11,27 @@ module Hcache
       @args = args
       @cache_dir = get_cache_dir
       @relative_mode = false
-      @config = Config.read("#{@cache_dir}/config")
+      @config = Config.read(File.join(@cache_dir, 'config'))
+      @gcc_default_includes = File.join(@cache_dir, 'gcc_default_includes')
     end
   
     def get_cache_dir 
       result = ENV["HCACHE_DIR"]
       if result.nil?
-        home = ENV["HOME"]
-        result = "#{home}/.hcache/"
+        result = File.join(ENV["HOME"], '.hcache/')
       end
-    
       result += '/' unless result.match(/\/$/)
       result
     end
 
     def run
       parse_options! @args
-    
       FileUtils.mkdir_p @cache_dir
-    
-      @gcc_default_includes_file = "#{@cache_dir}/gcc_default_includes"
     
       def rewrite_command(cache_dir, remove_o=false, insert_args="")
         argv = @args.clone
         command = "#{argv.shift} "
-        new_includes = GCC.default_includes(@gcc_default_includes_file)
+        new_includes = GCC.default_includes(@gcc_default_includes)
         old_includes = ""
         while !new_includes.empty? do
           include_dir = new_includes.shift
@@ -74,7 +70,7 @@ module Hcache
           print "  [ RELATIVE ] "
         elsif File.exists? target
           print "  [ UNCACHED ] "
-          GCC.add_default_include(File.dirname(file), @gcc_default_includes_file)
+          GCC.add_default_include(File.dirname(file), @gcc_default_includes)
         else
           print "  [ MISS     ] "
           FileUtils.mkdir_p File.dirname(target)
